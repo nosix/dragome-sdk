@@ -269,7 +269,8 @@ public class Assembly
 		for (String typeDeclaration : typeDeclarations)
 		{
 			String[] key= typeDeclaration.split("#");
-			if (!"::::bytes".equals(key[2])) //TODO fixme: scala annotations
+			if (!"::::bytes".equals(key[2])
+					&& !"kotlin.Metadata".equals(key[1])) //TODO fixme: scala annotations
 				writer.write(String.format("dragomeJs.addTypeAnnotation(\"%s\", \"%s\", \"%s\", \"%s\");\n", key[0], key[1], key[2], key[3].trim()));
 		}
 	}
