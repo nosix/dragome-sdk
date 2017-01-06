@@ -783,9 +783,9 @@ public class Pass1
 		logger.debug(sb.toString());
 	}
 
-	private VariableBinding createVariableBinding(int slot, Type type, boolean isWrite)
+	private VariableBinding createVariableBinding(int slot, int pc, Type type, boolean isWrite)
 	{
-		return methodDecl.createVariableBinding(VariableDeclaration.getLocalVariableName(method, slot, bytes.getIndex()), type, isWrite);
+		return methodDecl.createVariableBinding(VariableDeclaration.getLocalVariableName(method, slot, pc), type, isWrite);
 	}
 
 	private InfixExpression createInfixRightLeft(InfixExpression.Operator op, Expression right, Expression left, Type type)
@@ -1547,7 +1547,7 @@ public class Pass1
 				wide= isWide;
 				int constByte= readSigned();
 
-				VariableBinding reference= createVariableBinding(index, Type.INT, true);
+				VariableBinding reference= createVariableBinding(index, currentIndex, Type.INT, true);
 				reference.setField(false);
 
 				Assignment assign= new Assignment(Assignment.Operator.PLUS_ASSIGN);
@@ -1584,7 +1584,7 @@ public class Pass1
 			case Const.ILOAD_3:
 			{
 
-				VariableBinding reference= createVariableBinding(opcode - Const.ILOAD_0, Type.INT, false);
+				VariableBinding reference= createVariableBinding(opcode - Const.ILOAD_0, currentIndex, Type.INT, false);
 				reference.setField(false);
 				instruction= reference;
 				break;
@@ -1599,7 +1599,7 @@ public class Pass1
 			case Const.LLOAD_3:
 			{
 
-				VariableBinding reference= createVariableBinding(opcode - Const.LLOAD_0, Type.LONG, false);
+				VariableBinding reference= createVariableBinding(opcode - Const.LLOAD_0, currentIndex, Type.LONG, false);
 				reference.setField(false);
 				instruction= reference;
 				break;
@@ -1614,7 +1614,7 @@ public class Pass1
 			case Const.FLOAD_3:
 			{
 
-				VariableBinding reference= createVariableBinding(opcode - Const.FLOAD_0, Type.FLOAT, false);
+				VariableBinding reference= createVariableBinding(opcode - Const.FLOAD_0, currentIndex, Type.FLOAT, false);
 				reference.setField(false);
 				instruction= reference;
 				break;
@@ -1629,7 +1629,7 @@ public class Pass1
 			case Const.DLOAD_3:
 			{
 
-				VariableBinding reference= createVariableBinding(opcode - Const.DLOAD_0, Type.DOUBLE, false);
+				VariableBinding reference= createVariableBinding(opcode - Const.DLOAD_0, currentIndex, Type.DOUBLE, false);
 				reference.setField(false);
 				instruction= reference;
 				break;
@@ -1651,7 +1651,7 @@ public class Pass1
 				}
 				else
 				{
-					VariableBinding reference= createVariableBinding(opcode - Const.ALOAD_0, Type.OBJECT, false);
+					VariableBinding reference= createVariableBinding(opcode - Const.ALOAD_0, currentIndex, Type.OBJECT, false);
 					reference.setField(true);
 					instruction= reference;
 				}
@@ -1667,7 +1667,7 @@ public class Pass1
 			case Const.DLOAD:
 			{
 
-				VariableBinding reference= createVariableBinding(readUnsigned(), form.getResultType(), false);
+				VariableBinding reference= createVariableBinding(readUnsigned(), currentIndex, form.getResultType(), false);
 				reference.setField(false);
 				instruction= reference;
 				break;
@@ -1676,7 +1676,7 @@ public class Pass1
 			case Const.ALOAD:
 			{
 
-				VariableBinding reference= createVariableBinding(readUnsigned(), Type.OBJECT, false);
+				VariableBinding reference= createVariableBinding(readUnsigned(), currentIndex, Type.OBJECT, false);
 				reference.setField(true);
 				instruction= reference;
 				break;
@@ -1776,7 +1776,7 @@ public class Pass1
 					index= opcode - Const.DSTORE_0;
 				}
 				Assignment a= new Assignment(Assignment.Operator.ASSIGN);
-				VariableBinding reference= createVariableBinding(index, Type.DOUBLE, true);
+				VariableBinding reference= createVariableBinding(index, currentIndex, Type.DOUBLE, true);
 				reference.setField(false);
 				a.setLeftHandSide(reference);
 				a.setRightHandSide(stack.pop());
@@ -1805,7 +1805,7 @@ public class Pass1
 					index= opcode - Const.FSTORE_0;
 				}
 				Assignment a= new Assignment(Assignment.Operator.ASSIGN);
-				VariableBinding reference= createVariableBinding(index, Type.FLOAT, true);
+				VariableBinding reference= createVariableBinding(index, currentIndex, Type.FLOAT, true);
 				reference.setField(false);
 				a.setLeftHandSide(reference);
 				a.setRightHandSide(stack.pop());
@@ -1834,7 +1834,7 @@ public class Pass1
 					index= opcode - Const.ISTORE_0;
 				}
 				Assignment a= new Assignment(Assignment.Operator.ASSIGN);
-				VariableBinding reference= createVariableBinding(index, Type.INT, true);
+				VariableBinding reference= createVariableBinding(index, currentIndex, Type.INT, true);
 				reference.setField(false);
 				a.setLeftHandSide(reference);
 				a.setRightHandSide(stack.pop());
@@ -1863,7 +1863,7 @@ public class Pass1
 					index= opcode - Const.LSTORE_0;
 				}
 				Assignment a= new Assignment(Assignment.Operator.ASSIGN);
-				VariableBinding reference= createVariableBinding(index, Type.LONG, true);
+				VariableBinding reference= createVariableBinding(index, currentIndex, Type.LONG, true);
 				reference.setField(false);
 				a.setLeftHandSide(reference);
 				a.setRightHandSide(stack.pop());
@@ -1892,7 +1892,7 @@ public class Pass1
 				{
 					index= (opcode - Const.ASTORE_0);
 				}
-				VariableBinding reference= createVariableBinding(index, Type.OBJECT, true);
+				VariableBinding reference= createVariableBinding(index, currentIndex, Type.OBJECT, true);
 				a.setLeftHandSide(reference);
 
 				if (stack.size() > 0)
@@ -2032,7 +2032,7 @@ public class Pass1
 
 				int index= readUnsigned();
 				ReturnStatement r= new ReturnStatement(currentIndex, currentIndex);
-				r.setExpression(createVariableBinding(index, Type.INT, false));
+				r.setExpression(createVariableBinding(index, currentIndex, Type.INT, false));
 				instruction= r;
 				break;
 			}

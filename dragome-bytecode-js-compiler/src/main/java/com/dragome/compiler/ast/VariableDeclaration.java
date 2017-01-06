@@ -32,6 +32,7 @@ public class VariableDeclaration extends ASTNode
 
 	public static String getLocalVariableName(Method method, int slot, int pc)
 	{
+		/*
 		if (method.getLocalVariableTable() != null)
 		{
 
@@ -53,7 +54,7 @@ public class VariableDeclaration extends ASTNode
 			}
 
 		}
-
+		*/
 		return "l" + slot;
 	}
 
